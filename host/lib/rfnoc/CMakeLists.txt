@@ -41,6 +41,7 @@ LIBUHD_APPEND_SOURCES(
     ${CMAKE_CURRENT_SOURCE_DIR}/mock_block.cpp
     # Default block control classes:
     ${CMAKE_CURRENT_SOURCE_DIR}/addsub_block_control.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addcomplexmult_block_control.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_control.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ddc_block_control.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/duc_block_control.cpp

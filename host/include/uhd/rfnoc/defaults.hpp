@@ -75,6 +75,7 @@ static const device_type_t X300 = 0xA300;
 
 // block identifiers
 static const noc_id_t ADDSUB_BLOCK         = 0xADD00000;
+static const noc_id_t ADDCOMPLEXMULT_BLOCK = 0x3719A75C;
 static const noc_id_t DUC_BLOCK            = 0xD0C00000;
 static const noc_id_t DDC_BLOCK            = 0xDDC00000;
 static const noc_id_t FFT_BLOCK            = 0xFF700000;

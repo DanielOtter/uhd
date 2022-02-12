@@ -32,6 +32,7 @@ UHD_INSTALL(FILES
     rfnoc_types.hpp
     traffic_counter.hpp
     # Block controllers
+    addcomplexmult_block_control.hpp
     addsub_block_control.hpp
     block_control.hpp
     ddc_block_control.hpp
