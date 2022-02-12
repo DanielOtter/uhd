@@ -45,6 +45,40 @@ std::vector<std::string> node_t::get_property_ids() const
     return return_value;
 }
 
+std::vector<std::string> node_t::get_input_property_ids() const
+{
+    std::lock_guard<std::mutex> _l(_prop_mutex);
+    if (_props.count(res_source_info::INPUT_EDGE) == 0) {
+        return {};
+    }
+
+    auto& input_props = _props.at(res_source_info::INPUT_EDGE);
+    // TODO use a range here, we're not savages
+    std::vector<std::string> return_value(input_props.size());
+    for (size_t i = 0; i < input_props.size(); ++i) {
+        return_value[i] = input_props[i]->get_id();
+    }
+
+    return return_value;
+}
+
+std::vector<std::string> node_t::get_output_property_ids() const
+{
+    std::lock_guard<std::mutex> _l(_prop_mutex);
+    if (_props.count(res_source_info::OUTPUT_EDGE) == 0) {
+        return {};
+    }
+
+    auto& output_props = _props.at(res_source_info::OUTPUT_EDGE);
+    // TODO use a range here, we're not savages
+    std::vector<std::string> return_value(output_props.size());
+    for (size_t i = 0; i < output_props.size(); ++i) {
+        return_value[i] = output_props[i]->get_id();
+    }
+
+    return return_value;
+}
+
 void node_t::set_properties(const uhd::device_addr_t& props, const size_t instance)
 {
     for (const auto& key : props.keys()) {
@@ -69,6 +103,78 @@ void node_t::set_properties(const uhd::device_addr_t& props, const size_t instan
             _find_property({res_source_info::USER, local_instance}, local_key);
         if (!prop_ref) {
             RFNOC_LOG_WARNING("set_properties() cannot set property `"
+                              << local_key << "': No such property.");
+            continue;
+        }
+        auto prop_access = _request_property_access(prop_ref, property_base_t::RW);
+        prop_ref->set_from_str(props.get(key));
+    }
+
+    // Now trigger a property resolution. If other properties depend on modified
+    // properties, they will be updated.
+    resolve_all();
+}
+
+void node_t::set_input_properties(const uhd::device_addr_t& props, const size_t instance)
+{
+    for (const auto& key : props.keys()) {
+        std::string local_key  = key;
+        size_t local_instance  = instance;
+        const size_t colon_pos = key.find(':');
+        if (colon_pos != std::string::npos) {
+            // Extract the property ID and instance
+            local_key                 = key.substr(0, colon_pos);
+            std::string instance_part = key.substr(colon_pos + 1);
+            try {
+                local_instance = std::stoi(instance_part);
+            } catch (...) {
+                // If no number, or an invalid number is specified after the
+                // colon, throw a value_error.
+                throw uhd::value_error("Property id `" + local_key
+                                       + "' contains a malformed instance override!");
+            }
+        }
+
+        property_base_t* prop_ref =
+            _find_property({res_source_info::INPUT_EDGE, local_instance}, local_key);
+        if (!prop_ref) {
+            RFNOC_LOG_WARNING("set_input_properties() cannot set property `"
+                              << local_key << "': No such property.");
+            continue;
+        }
+        auto prop_access = _request_property_access(prop_ref, property_base_t::RW);
+        prop_ref->set_from_str(props.get(key));
+    }
+
+    // Now trigger a property resolution. If other properties depend on modified
+    // properties, they will be updated.
+    resolve_all();
+}
+
+void node_t::set_output_properties(const uhd::device_addr_t& props, const size_t instance)
+{
+    for (const auto& key : props.keys()) {
+        std::string local_key  = key;
+        size_t local_instance  = instance;
+        const size_t colon_pos = key.find(':');
+        if (colon_pos != std::string::npos) {
+            // Extract the property ID and instance
+            local_key                 = key.substr(0, colon_pos);
+            std::string instance_part = key.substr(colon_pos + 1);
+            try {
+                local_instance = std::stoi(instance_part);
+            } catch (...) {
+                // If no number, or an invalid number is specified after the
+                // colon, throw a value_error.
+                throw uhd::value_error("Property id `" + local_key
+                                       + "' contains a malformed instance override!");
+            }
+        }
+
+        property_base_t* prop_ref =
+            _find_property({res_source_info::OUTPUT_EDGE, local_instance}, local_key);
+        if (!prop_ref) {
+            RFNOC_LOG_WARNING("set_output_properties() cannot set property `"
                               << local_key << "': No such property.");
             continue;
         }
