@@ -14,6 +14,7 @@
 namespace py = pybind11;
 
 #include "cal/cal_python.hpp"
+#include "rfnoc/addcomplexmult_block_control_python.hpp"
 #include "rfnoc/ddc_block_control_python.hpp"
 #include "rfnoc/duc_block_control_python.hpp"
 #include "rfnoc/fft_block_control_python.hpp"
@@ -26,6 +27,7 @@ namespace py = pybind11;
 #include "rfnoc/replay_block_control_python.hpp"
 #include "rfnoc/rfnoc_python.hpp"
 #include "rfnoc/siggen_block_control_python.hpp"
+#include "rfnoc/split_stream_block_control_python.hpp"
 #include "rfnoc/switchboard_block_control_python.hpp"
 #include "rfnoc/vector_iir_block_control_python.hpp"
 #include "rfnoc/window_block_control_python.hpp"
@@ -89,6 +91,7 @@ PYBIND11_MODULE(libpyuhd, m)
     // Register RFNoC submodule
     auto rfnoc_module = m.def_submodule("rfnoc", "RFNoC Objects");
     export_rfnoc(rfnoc_module);
+    export_addcomplexmult_block_control(rfnoc_module);
     export_ddc_block_control(rfnoc_module);
     export_duc_block_control(rfnoc_module);
     export_fft_block_control(rfnoc_module);
@@ -100,6 +103,7 @@ PYBIND11_MODULE(libpyuhd, m)
     export_radio_control(rfnoc_module);
     export_replay_block_control(rfnoc_module);
     export_siggen_block_control(rfnoc_module);
+    export_split_stream_block_control(rfnoc_module);
     export_switchboard_block_control(rfnoc_module);
     export_vector_iir_block_control(rfnoc_module);
     export_window_block_control(rfnoc_module);

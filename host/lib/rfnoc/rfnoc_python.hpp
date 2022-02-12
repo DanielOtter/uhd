@@ -442,6 +442,16 @@ void export_rfnoc(py::module& m)
         .def("set_properties",
             &node_t::set_properties,
             py::arg("props"),
+            py::arg("instance") = 0)
+        .def("get_input_property_ids", &node_t::get_input_property_ids)
+        .def("set_input_properties",
+            &node_t::set_input_properties,
+            py::arg("props"),
+            py::arg("instance") = 0)
+        .def("get_output_property_ids", &node_t::get_output_property_ids)
+        .def("set_output_properties",
+            &node_t::set_output_properties,
+            py::arg("props"),
             py::arg("instance") = 0);
 }
 
